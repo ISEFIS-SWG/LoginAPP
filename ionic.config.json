@@ -1,0 +1,7 @@
+{
+  "name": "SmartRun",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
