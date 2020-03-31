@@ -49,6 +49,8 @@ const Register: React.FC<RouteComponentProps> = (props) => {
 
                 //shareValue.selfregis.User_id=result?.data.User_id
                 shareValue.selflogin=result?.data;
+                shareValue.User_id=result?.data.User_id
+                shareValue.User_Name=result?.data.User_Name
                 shareValue.LoginFrom=1
                 setShowLoading(false);
                 props.history.push('/Home')

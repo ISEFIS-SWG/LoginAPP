@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import './Login.css';
 import { Plugins } from '@capacitor/core';
 import shareValue from './models/share';
-import { getAuthen, createUser } from '../services/EmployeeAPI';
+import { getAuthen, createUser, apicheck } from '../services/EmployeeAPI';
 const INITIAL_STATE = {
   user: {},
   runuser:{}
@@ -18,16 +18,16 @@ class facebookRegis extends Component {
     this.state = { ...INITIAL_STATE };
   }
   componentDidMount() {
-    //this.getUserInfo();
+    this.getUserInfo();
     this.checkuser();
   }
-  // async getUserInfo() {
-  //   const response = await fetch(`https://graph.facebook.com/${this.props.location.state.userId}?fields=id,name,gender,link,picture&type=large&access_token=${this.props.location.state.token}`);
-  //   const myJson = await response.json();
-  //   this.setState({
-  //     user: myJson
-  //   })
-  // }
+  async getUserInfo() {
+    const response = await fetch(`https://graph.facebook.com/${this.props.location.state.userId}?fields=id,name,first_name,last_name,email,gender,link,picture&type=large&access_token=${this.props.location.state.token}`);
+    const myJson = await response.json();
+    this.setState({
+      user: myJson
+    })
+  }
   async signOut(): Promise<void> {
     const { history } = this.props;
     await Plugins.FacebookLogin.logout();
@@ -35,22 +35,29 @@ class facebookRegis extends Component {
   }
    async GoToHome() {
     const { history } = this.props;
-    
+    if(shareValue.User_id>0){
+      console.log('share'+shareValue.User_id)
+      history.push({
+        pathname: '/home'
+      });
+    }
+
 if(shareValue.facebookUpdateDB==1){
-    //let result= await createUser(this.state.user.id,'facebook',this.state.user.first_name,this.state.user.middle_name,'-',this.state.user.middle_name,this.state.user.picture.data.url,this.state.user.gender,'-','-')
-    let result= await createUser('1223455555667','facebook','test','test','-','testtt@tot.com','test','testt','-','-')
-   
-    if(result?.data.success){
+    let result= await apicheck(this.state.user.id,'facebook',this.state.user.first_name,this.state.user.last_name,'-',this.state.user.email,this.state.user.picture.data.url,this.state.user.gender,'-','-')
+    //let result= await apicheck('1223455555667','facebook','test','test','-','testtt@tot.com','test','testt','-','-')
+    console.log('share'+result?.data[0].User_id)
+    if(result?.data[0].User_id>0){
+shareValue.User_id=result?.data[0].User_id
+shareValue.User_Name=result?.data[0].User_Name
       //props.history.goBack();
       //shareValue.selfregis=User_Name
 
       //shareValue.selfregis.User_id=result?.data.User_id
-      shareValue.User_id=result?.data;
-      console.log('to-webnext'+shareValue.User_id.insertId)
+      //shareValue.User_id=result?.data;
+      console.log('to-webnext'+shareValue.User_id)
       shareValue.LoginFrom=2
       history.push({
-        pathname: '/home',
-        state: { name: shareValue.User_id}
+        pathname: '/home'
       });
   }
 
@@ -66,8 +73,8 @@ if(shareValue.facebookUpdateDB==1){
   }
 
   async checkuser() {
-   // const response = await fetch(`http://180.180.241.92:3003/employees/usercheck?User_Name=${this.state.user.id}`);
-    const response = await fetch(`http://180.180.241.92:3003/employees/usercheck/1304551258888558999`);
+    const response = await fetch(`http://180.180.241.92:3003/employees/usercheck/${this.state.user.id}`);
+    //const response = await fetch(`http://180.180.241.92:3003/employees/usercheck/1223455555667`);
     const myJson = await response.json();
      
     this.setState({
@@ -75,11 +82,12 @@ if(shareValue.facebookUpdateDB==1){
     })
     if(myJson.length>0)
 {
-console.log('test'+this.state.runuser[0].User_id)
+console.log('fetchresult'+this.state.runuser[0].User_Name)
 shareValue.User_id=this.state.runuser[0].User_id
-console.log('test1'+shareValue.facebookUsercheck)
+shareValue.User_Name=this.state.runuser[0].User_Name
+console.log('fetchresult'+shareValue.User_id)
   }else {shareValue.facebookUpdateDB=1
-    console.log('test1'+shareValue.facebookUpdateDB)
+    console.log('test'+shareValue.facebookUpdateDB)
   }
 
 
@@ -115,12 +123,9 @@ console.log('test1'+shareValue.facebookUsercheck)
                 <img src={this.state.user.picture.data.url} />
               </IonThumbnail>
               <IonLabel>
-                <h3>{this.state.user.name}</h3>
-                <h3>{this.state.user.id}</h3>
-                <h3>{this.state.user.first_name}</h3>
-                <h3>{this.state.user.gender}</h3>
-                <h3>{this.state.user.middle_name}</h3>
-                <h3>{this.state.user.name_format}</h3>
+                <h3>คุณ: {this.state.user.name}</h3>
+                <h3>ID:{this.state.user.id}</h3>
+                <h3>Email:{this.state.user.email}</h3>
               
               </IonLabel>
             </IonItem>
@@ -141,6 +146,9 @@ console.log('test1'+shareValue.facebookUsercheck)
 
           <IonButton className="login-button" onClick={ () => this.GoToHome()} expand="full" fill="solid" color="primary">
             เริ่มออกกำลังกายกันได้แล้ว
+        </IonButton>
+        <IonButton className="login-button" onClick={() => this.signOut()} expand="full" fill="solid" color="danger">
+            Logout from Facebook
         </IonButton>
      
         </IonContent>

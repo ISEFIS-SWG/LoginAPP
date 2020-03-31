@@ -35,6 +35,8 @@ let LoginCheck = async()=>{
   let result= await getAuthen(User_Name,User_password)
   result?.data.map((selflogin:any)=>{
     if(selflogin.User_id>0){
+      shareValue.User_id=selflogin.User_id
+      shareValue.User_Name=selflogin.User_Name
       shareValue.selflogin=selflogin;
       //shareValue.user=logindetail;
       console.log('rwsult'+shareValue.selflogin.User_id)

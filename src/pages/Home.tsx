@@ -7,19 +7,21 @@ import { getEmployees } from '../services/EmployeeAPI';
 const Home: React.FC<RouteComponentProps> = (props) => {
   let loginvia;
   let username;
-  let IDNum;
+  let User_id;
   let Token;
 
   if(shareValue.LoginFrom===1) {
      loginvia='Direct Register'
-     username=shareValue.selflogin.email
-     IDNum=shareValue.selflogin.User_id
+    // username=shareValue.User_Name
+    // User_id=shareValue.selflogin.User_id
+     username=shareValue.User_Name
+     User_id=shareValue.User_id
   }
   if(shareValue.LoginFrom===2) {
      loginvia='Facebook'
-     username=shareValue.User_id.insertId
-     IDNum=shareValue.facebook.id
-     Token=shareValue.FacebookToken;
+     username=shareValue.User_Name
+     User_id=shareValue.User_id
+
      
   }
   if(shareValue.LoginFrom===3)  loginvia='Google'
@@ -42,13 +44,13 @@ const Home: React.FC<RouteComponentProps> = (props) => {
   <IonInput placeholder="loginvia" value={loginvia}> </IonInput>
     </IonItem>
     <IonItem>
-  <IonLabel color="success" position="floating">Your UserAccount(Email)</IonLabel>
+  <IonLabel color="success" position="floating">Your UserName</IonLabel>
   <IonInput placeholder="UserAccount" value={username}> </IonInput>
     </IonItem>
     <IonItem>
-  <IonLabel color="success" position="floating">Your ID Number</IonLabel>
-  <IonInput placeholder="User_id" value={IDNum}> </IonInput>
-  <IonInput placeholder="Token" value={Token}> </IonInput>
+  <IonLabel color="success" position="floating">Your ID </IonLabel>
+  <IonInput placeholder="User_id" value={User_id}> </IonInput>
+
     </IonItem>  
       </IonContent>
 
